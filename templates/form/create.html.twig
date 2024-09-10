@@ -1,71 +1,53 @@
-{# templates/form/create.html.twig #}
-
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un nouveau formulaire{% endblock %}
+{% block title %}Create dynamic form page!{% endblock %}
+
+{% set attribute_option_prototype = form_widget(form.fields.vars.prototype.children.fieldAttributes.children.options.vars.prototype) %}
+{% set fields_prototype = form_widget(form.fields.vars.prototype) %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4">Créer un nouveau formulaire</h1>
-
-    {# Affiche les messages flash pour succès ou erreurs #}
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-    {% endfor %}
-    
-    {% for message in app.flashes('error') %}
-        <div class="alert alert-danger">
-            {{ message }}
-        </div>
-    {% endfor %}
-
-    {# Rendu du formulaire avec Bootstrap #}
-    {{ form_start(form, {'attr': {'class': 'form'}}) }}
-
-    <div class="mb-3">
-        {{ form_label(form.name, 'Nom du formulaire', {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+    {{ parent() }}
+    <div class="container form-container">
+    {{ form_start(form) }}
+    <input type="hidden" name="fields_prototype" value="{{ fields_prototype }}"/>
+    <input type="hidden" name="attribute_option_prototype" value="{{ attribute_option_prototype }}"/>
+     <div class="form-group mb-2">
+     <div class="d-flex">
+        {{ form_widget(form.name, {
+            'attr': {
+                'placeholder': 'Entrez le nom de votre formulaire'
+            }
+        }) }}
         {{ form_errors(form.name) }}
+         <button id="add_row" class="btn btn-primary btn-sm ms-2" title='Ajout champ' type="button">+</button>
+         </div>
     </div>
-
-    <div class="mb-3">
-        {{ form_label(form.fields, 'Champs du formulaire', {'label_attr': {'class': 'form-label'}}) }}
-        
-        <div id="fields-container" data-prototype="{{ form_widget(form.fields.vars.prototype)|raw }}">
-            {{ form_widget(form.fields) }}
-        </div>  
-
-        <button type="button" id="add-field-btn" class="btn btn-secondary mt-2">Ajouter un champ</button>
+   
+ <!-- Conteneur pour les champs dynamiques -->
+    <div id="fields_container">
+        <!-- Champs dynamiques ajoutés ici -->
+        <div class="field-row">
+            {{ fields_prototype | replace({'__name__':0})| raw }}
+        </div>
+        <hr/>
     </div>
+     <!-- Conteneur pour les boutons d'action -->
+    <div class="buttons-container mt-4">
+       <a href="{{ path('home') }}" class="btn btn-warning btn-sm">Retour à la liste des formulaires</a>
+        <button id="save" class="btn btn-primary btn-sm" type="submit">Sauvegarder le formulaire</button>
+    </div>
+    
 
-    {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary'}}) }}
-    {{ form_end(form) }}
-
-    <a href="" class="btn btn-secondary mt-3">Retour à la liste des formulaires</a>
+    {{ form_row(form._token) }}
+    {{ form_end(form, {render_rest: false}) }}
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const fieldContainer = document.getElementById('fields-container');
-    const addFieldButton = document.getElementById('add-field-btn');
-    const prototype = fieldContainer.dataset.prototype;
-    let index = fieldContainer.querySelectorAll('.form-control').length;
-    console.log(index)
-
-    addFieldButton.addEventListener('click', function () {
-        // Remplace les occurrences de __name__ dans le prototype avec l'index actuel
-        const newFieldHtml = prototype.replace(/__name__/g, index);
-        console.log(newFieldHtml);
-        
-        // Ajoute le nouvel HTML au conteneur de champs
-        fieldContainer.insertAdjacentHTML('beforeend', newFieldHtml);
-        
-        // Incrémente l'index pour le prochain champ
-        index++;
-    });
-});
-
-</script>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('generic_form') }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('generic_form') }}
 {% endblock %}

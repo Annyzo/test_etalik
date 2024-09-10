@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Formulaires{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="container mt-4 text-center">
+        <!-- Vérifier si des formulaires sont disponibles -->
+        {% if listForms|length > 0 %}
+            <div class="list-group">
+               
+
+                <!-- Boucle pour afficher chaque formulaire -->
+                {% for form in listForms %}
+                    <a href="{{ path('view_form', {'slug': form.slug}) }}" class="list-group-item list-group-item-action">
+                        {{ form.name }} ({{ form.fields|length }} {{ form.fields|length > 1 ? 'champs' : 'champ' }})
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Message lorsque aucune formulaire n'est disponible -->
+            <p class="mt-3">Aucun formulaire disponible. Créez un nouveau formulaire en utilisant le bouton ci-dessous.</p>
+        {% endif %}
+
+        <!-- Bouton pour créer un nouveau formulaire -->
+        
+        <a href="{{ path('create_form') }}" class="btn btn-secondary btn-sm mt-4">Créer un nouveau formulaire</a>
+    </div>
+{% endblock %}

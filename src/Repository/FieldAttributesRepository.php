@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\Submission;
+use App\Entity\FieldAttributes;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Submission>
+ * @extends ServiceEntityRepository<FieldAttributes>
  */
-class SubmissionRepository extends ServiceEntityRepository
+class FieldAttributesRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Submission::class);
+        parent::__construct($registry, FieldAttributes::class);
     }
 
     //    /**
-    //     * @return Submission[] Returns an array of Submission objects
+    //     * @return FieldAttributes[] Returns an array of FieldAttributes objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
+    //        return $this->createQueryBuilder('f')
+    //            ->andWhere('f.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
+    //            ->orderBy('f.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Submission
+    //    public function findOneBySomeField($value): ?FieldAttributes
     //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
+    //        return $this->createQueryBuilder('f')
+    //            ->andWhere('f.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

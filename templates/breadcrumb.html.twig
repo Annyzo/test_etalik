@@ -1,0 +1,26 @@
+{% set route = app.request.attributes.get('_route') %}
+{% set slug = app.request.attributes.get('slug') %}
+
+<div aria-label="breadcrumb" class="d-flex justify-content-center mt-5">
+    <!-- Lien vers la page d'accueil avec titre -->
+    {% if route == 'home' %}
+        <a class="link-body-emphasis text-decoration-none" href="{{ path('home') }}">
+            <h2 class="ms-2 mb-0">Liste des formulaires</h2>
+        </a>
+    {% endif %}
+    
+    <!-- Lien vers la page de création de formulaire avec titre -->
+    {% if route == 'create_form' %}
+        <a class="link-body-emphasis text-decoration-none" href="{{ path('create_form') }}">
+            <h2 class="mb-0">Création d'un formulaire</h2>
+        </a>
+    {% endif %}
+    
+    <!-- Titre pour la vue de formulaire, avec slug affiché -->
+    {% if route == 'view_form' %}
+    
+        <a class="link-body-emphasis text-decoration-none text-center" href="{{ path('home') }}">
+            <h2 class="mb-0">Forme de formulaire <br>{{ slug }}</h2>
+        </a>
+    {% endif %}
+</div>

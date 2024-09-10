@@ -6,6 +6,7 @@ use App\Repository\FormRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[ORM\Entity(repositoryClass: FormRepository::class)]
 class Form
@@ -21,19 +22,15 @@ class Form
     /**
      * @var Collection<int, Field>
      */
-    #[ORM\OneToMany(targetEntity: Field::class, mappedBy: 'form')]
+    #[ORM\OneToMany(targetEntity: Field::class, mappedBy: 'form', cascade: ['persist'], orphanRemoval: true)]
     private Collection $fields;
 
-    /**
-     * @var Collection<int, Submission>
-     */
-    #[ORM\OneToMany(targetEntity: Submission::class, mappedBy: 'form')]
-    private Collection $submissions;
+    #[ORM\Column(length: 255)]
+    private ?string $slug = null;
 
     public function __construct()
     {
         $this->fields = new ArrayCollection();
-        $this->submissions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -49,6 +46,8 @@ class Form
     public function setName(string $name): static
     {
         $this->name = $name;
+        $slugger = new AsciiSlugger();
+        $this->slug = $slugger->slug($name)->lower();
 
         return $this;
     }
@@ -83,32 +82,14 @@ class Form
         return $this;
     }
 
-    /**
-     * @return Collection<int, Submission>
-     */
-    public function getSubmissions(): Collection
+    public function getSlug(): ?string
     {
-        return $this->submissions;
+        return $this->slug;
     }
 
-    public function addSubmission(Submission $submission): static
+    public function setSlug(string $slug): static
     {
-        if (!$this->submissions->contains($submission)) {
-            $this->submissions->add($submission);
-            $submission->setForm($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSubmission(Submission $submission): static
-    {
-        if ($this->submissions->removeElement($submission)) {
-            // set the owning side to null (unless already changed)
-            if ($submission->getForm() === $this) {
-                $submission->setForm(null);
-            }
-        }
+        $this->slug = $slug;
 
         return $this;
     }
