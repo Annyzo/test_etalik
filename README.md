@@ -23,12 +23,14 @@ Clonez ce dépôt sur votre machine locale :
 git clone https://github.com/Annyzo/test_etalik.git
 cd test_etalik
 
+```
 ### 2. Installer les dépendances PHP
 
 Utilisez Composer pour installer toutes les dépendances PHP :
 
 ```bash
 composer install
+```
 
 ### 3. Créer la base de données
 
@@ -37,6 +39,7 @@ Créez la base de données et exécutez les migrations :
 ```bash
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
+```
 
 ### 3. Installer les dépendances front-end
 
@@ -47,6 +50,7 @@ npm install
 ```bash
 
 npm run dev   # Pour l'environnement de développement
+```
 
 ### 5. Lancer le serveur de développement Symfony
 Utilisez la commande suivante pour démarrer le serveur Symfony :
@@ -54,12 +58,14 @@ Utilisez la commande suivante pour démarrer le serveur Symfony :
 ```bash
 
 symfony serve
+```
 
 Ou avec PHP intégré :
 
 ```bash
 
 php -S localhost:8000 -t public
+```
 L'application sera accessible à l'adresse suivante : http://localhost:8000
 
 
