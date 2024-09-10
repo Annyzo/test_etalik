@@ -1,95 +1,82 @@
 {% extends 'base.html.twig' %}
-
 {% set slug = app.request.attributes.get('slug') %}
-
-{% block title %}Vue du Formulaire [{{ slug }}]{% endblock %}
-
+{% block title %}Form View [{{ slug }}]{% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    {% if app.flashes('success') | length > 0 %}
+    {% if app.flashes('success') | length>0 %}
         {{ encore_entry_script_tags('success_answer') }}
     {% endif %}
 {% endblock %}
-
 {% block body %}
     {{ parent() }}
-
-    <div class="container mt-4">
-        <!-- Formulaire d'affichage -->
-        <form method="post" action="{{ path('answer_form', {slug: slug}) }}">
-            <h2 class="mb-4">Répondez au formulaire</h2>
-
-            {% for field in form.fields %}
-                {% set fieldType = constant('App\\Form\\FieldType::options')[field.type] | lower %}
-                {% set fieldId = 'field_' ~ field.id %}
-                {% set fieldLabel = field.label | capitalize %}
-                {% set isExpanded = field.fieldAttributes.expanded %}
-                {% set isRequired = field.fieldAttributes.required %}
-
-                <div class="form-group mb-4">
-                    <label for="{{ fieldId }}">{{ fieldLabel }}</label>
-
-                    {% if field.type == constant('App\\TypeDefinition\\FieldType::Textarea').value %}
-                        <textarea name="{{ fieldId }}" id="{{ fieldId }}"
-                                  class="form-control" placeholder="{{ fieldLabel }}"
-                                  {{ isRequired ? 'required' }}></textarea>
-
-                    {% elseif field.type == constant('App\\TypeDefinition\\FieldType::Select').value %}
-                        <select id="{{ fieldId }}" name="{{ fieldId }}"
-                                class="form-control" {{ isExpanded ? 'multiple' }} 
-                                {{ isRequired ? 'required' }}>
-                            {% for option in field.fieldAttributes.options %}
+    <div class="container">
+        <form method="post" action="{{ path('answer_form', {slug}) }}">
+            {% for fields in form.fields.toArray %}
+                {% set _type = constant('App\\Form\\FieldType::options')[fields.type] | lower %}
+                {% set id = 'field_'~ fields.id %}
+                {% set label = fields.label | capitalize %}
+                {% set isExpanded = fields.fieldAttributes.expanded %}
+                {% set isRequired = fields.fieldAttributes.required %}
+                <div class="form-group">
+                    <label for="{{ id }}">{{ label }}</label>
+                    {% if fields.type == constant('App\\TypeDefinition\\FieldType::Textarea').value %}
+                        <textarea name="{{ id }}" {{ isRequired ? 'required' }} id="{{ id }}" class="form-control mb-3"
+                                  placeholder="{{ label }}"></textarea>
+                    {% elseif fields.type == constant('App\\TypeDefinition\\FieldType::Select').value %}
+                        <select id="{{ id }}" name="{{ id }}"
+                                class="form-control" {{ isExpanded? 'multiple' }} {{ isRequired ? 'required' }} >
+                            {% for option in fields.fieldAttributes.options %}
                                 <option value="{{ option }}">{{ option }}</option>
                             {% endfor %}
                         </select>
-
-                    {% elseif field.type == constant('App\\TypeDefinition\\FieldType::Boolean').value %}
-                        {% for option in field.fieldAttributes.options %}
+                    {% elseif fields.type == constant('App\\TypeDefinition\\FieldType::Boolean').value %}
+                        {% for option in fields.fieldAttributes.options %}
                             <div class="form-check">
-                                <input type="radio" name="{{ fieldId }}" id="{{ fieldId }}_{{ option }}"
+                                <label class="form-check-label" for="{{ id }}">{{ option }}</label>
+                                <input type="radio" name="{{ id }}" id="{{ id }}"
                                        value="{{ option }}" {{ isRequired ? 'required' }}/>
-                                <label class="form-check-label" for="{{ fieldId }}_{{ option }}">{{ option }}</label>
                             </div>
                         {% endfor %}
-
                     {% else %}
-                        <input class="form-control" id="{{ fieldId }}" name="{{ fieldId }}"
-                               placeholder="{{ fieldLabel }}" {{ isRequired ? 'required' }}
-                               type="{{ fieldType }}"/>
+                        <input class="form-control mb-3" id="{{ id }}" name="{{ id }}"
+                               placeholder="{{ label }}" {{ isRequired ? 'required' }}
+                               type="{{ _type }}"/>
                     {% endif %}
                 </div>
             {% endfor %}
-
-            <button type="submit" class="btn btn-primary mt-3">Envoyer</button>
+            <input type="submit" class="btn-sm btn btn-primary mt-3 mb-3">
         </form>
-    </div>
 
-    {% if answers|length > 0 %}
+    </div>
+    {% if answers|length >0 %}
         <div class="container mt-5">
-            <h2 class="text-center">Réponses</h2>
+            <h1 class="text-center">Answers</h1>
             {% for index, rows in answers %}
-                <table class="table table-hover table-responsive my-5" id="response_{{ index }}">
-                    <caption class="text-center">
-                        <a class="text-decoration-none" href="#response_{{ index }}">
-                            [#{{ index }}]</a> 
-                        {{ rows|length > 0 ? 'Répondu le ' ~ rows[0].answered_at|date('d/m/Y H:i') : 'Aucune réponse'}}
-                    </caption>
+                <table class="table table-hover table-responsive my-5" id="{{ index }}">
+                    <caption style="caption-side: top"><a class="text-decoration-none" href="#{{ index }}">
+                            [#{{ index }}]</a> {{ rows|length>0 ? 'at ' ~rows[0].answered_at }} </caption>
                     <thead class="thead-dark">
-                        <tr class="text-center">
-                            {% for row in rows %}
-                                <th scope="col">{{ row.field }}</th>
-                            {% endfor %}
-                        </tr>
+                    <tr class="text-center">
+
+                        {% for row in rows %}
+                            <th scope="col">{{ row.field }}</th>
+                        {% endfor %}
+
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr class="text-center">
-                            {% for row in rows %}
-                                <td>{{ row.answer }}</td>
-                            {% endfor %}
-                        </tr>
+                    <tr class="text-center">
+                        {% for row in rows %}
+                            <td scope="{{ loop.index ==1 ? 'row' }}">{{ row.answer }}</td>
+                        {% endfor %}
+
+                    </tr>
+
                     </tbody>
                 </table>
             {% endfor %}
+
+
         </div>
     {% endif %}
 {% endblock %}
