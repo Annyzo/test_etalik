@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% set slug = app.request.attributes.get('slug') %}
+
+{% block title %}Vue du Formulaire [{{ slug }}]{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% if app.flashes('success') | length > 0 %}
+        {{ encore_entry_script_tags('success_answer') }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="container mt-4">
+        <!-- Formulaire d'affichage -->
+        <form method="post" action="{{ path('answer_form', {slug: slug}) }}">
+            <h2 class="mb-4">Répondez au formulaire</h2>
+
+            {% for field in form.fields %}
+                {% set fieldType = constant('App\\Form\\FieldType::options')[field.type] | lower %}
+                {% set fieldId = 'field_' ~ field.id %}
+                {% set fieldLabel = field.label | capitalize %}
+                {% set isExpanded = field.fieldAttributes.expanded %}
+                {% set isRequired = field.fieldAttributes.required %}
+
+                <div class="form-group mb-4">
+                    <label for="{{ fieldId }}">{{ fieldLabel }}</label>
+
+                    {% if field.type == constant('App\\TypeDefinition\\FieldType::Textarea').value %}
+                        <textarea name="{{ fieldId }}" id="{{ fieldId }}"
+                                  class="form-control" placeholder="{{ fieldLabel }}"
+                                  {{ isRequired ? 'required' }}></textarea>
+
+                    {% elseif field.type == constant('App\\TypeDefinition\\FieldType::Select').value %}
+                        <select id="{{ fieldId }}" name="{{ fieldId }}"
+                                class="form-control" {{ isExpanded ? 'multiple' }} 
+                                {{ isRequired ? 'required' }}>
+                            {% for option in field.fieldAttributes.options %}
+                                <option value="{{ option }}">{{ option }}</option>
+                            {% endfor %}
+                        </select>
+
+                    {% elseif field.type == constant('App\\TypeDefinition\\FieldType::Boolean').value %}
+                        {% for option in field.fieldAttributes.options %}
+                            <div class="form-check">
+                                <input type="radio" name="{{ fieldId }}" id="{{ fieldId }}_{{ option }}"
+                                       value="{{ option }}" {{ isRequired ? 'required' }}/>
+                                <label class="form-check-label" for="{{ fieldId }}_{{ option }}">{{ option }}</label>
+                            </div>
+                        {% endfor %}
+
+                    {% else %}
+                        <input class="form-control" id="{{ fieldId }}" name="{{ fieldId }}"
+                               placeholder="{{ fieldLabel }}" {{ isRequired ? 'required' }}
+                               type="{{ fieldType }}"/>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary mt-3">Envoyer</button>
+        </form>
+    </div>
+
+    {% if answers|length > 0 %}
+        <div class="container mt-5">
+            <h2 class="text-center">Réponses</h2>
+            {% for index, rows in answers %}
+                <table class="table table-hover table-responsive my-5" id="response_{{ index }}">
+                    <caption class="text-center">
+                        <a class="text-decoration-none" href="#response_{{ index }}">
+                            [#{{ index }}]</a> 
+                        {{ rows|length > 0 ? 'Répondu le ' ~ rows[0].answered_at|date('d/m/Y H:i') : 'Aucune réponse'}}
+                    </caption>
+                    <thead class="thead-dark">
+                        <tr class="text-center">
+                            {% for row in rows %}
+                                <th scope="col">{{ row.field }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            {% for row in rows %}
+                                <td>{{ row.answer }}</td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
