@@ -45,6 +45,7 @@ php bin/console doctrine:migrations:migrate
 
 ```bash
 npm install
+```
 
 ### 4. Compiler les assets (facultatif)
 ```bash
