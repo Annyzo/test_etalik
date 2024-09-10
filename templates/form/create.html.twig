@@ -1,0 +1,71 @@
+{# templates/form/create.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un nouveau formulaire{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">Créer un nouveau formulaire</h1>
+
+    {# Affiche les messages flash pour succès ou erreurs #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {# Rendu du formulaire avec Bootstrap #}
+    {{ form_start(form, {'attr': {'class': 'form'}}) }}
+
+    <div class="mb-3">
+        {{ form_label(form.name, 'Nom du formulaire', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.fields, 'Champs du formulaire', {'label_attr': {'class': 'form-label'}}) }}
+        
+        <div id="fields-container" data-prototype="{{ form_widget(form.fields.vars.prototype)|raw }}">
+            {{ form_widget(form.fields) }}
+        </div>  
+
+        <button type="button" id="add-field-btn" class="btn btn-secondary mt-2">Ajouter un champ</button>
+    </div>
+
+    {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary'}}) }}
+    {{ form_end(form) }}
+
+    <a href="" class="btn btn-secondary mt-3">Retour à la liste des formulaires</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const fieldContainer = document.getElementById('fields-container');
+    const addFieldButton = document.getElementById('add-field-btn');
+    const prototype = fieldContainer.dataset.prototype;
+    let index = fieldContainer.querySelectorAll('.form-control').length;
+    console.log(index)
+
+    addFieldButton.addEventListener('click', function () {
+        // Remplace les occurrences de __name__ dans le prototype avec l'index actuel
+        const newFieldHtml = prototype.replace(/__name__/g, index);
+        console.log(newFieldHtml);
+        
+        // Ajoute le nouvel HTML au conteneur de champs
+        fieldContainer.insertAdjacentHTML('beforeend', newFieldHtml);
+        
+        // Incrémente l'index pour le prochain champ
+        index++;
+    });
+});
+
+</script>
+{% endblock %}
