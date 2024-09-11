@@ -13,6 +13,7 @@ Assurez-vous que les logiciels suivants sont installés sur votre machine :
 - Node.js et npm (si votre projet utilise Webpack Encore ou d'autres outils JavaScript)
 - Git
 
+
 ## Installation
 
 ### 1. Cloner le dépôt
@@ -70,3 +71,7 @@ php -S localhost:8000 -t public
 L'application sera accessible à l'adresse suivante : http://localhost:8000
 
 
+## NB:
+si on utilise docker avec cette commande
+```chmod +x ./boot.sh```
+```docker-compose up --build -d ```
