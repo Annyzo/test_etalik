@@ -76,3 +76,5 @@ si on utilise docker avec cette commande
 
 ```chmod +x ./boot.sh```
 ```docker-compose up --build -d ```
+Puis lance avec cette url
+http://localhost:8080
