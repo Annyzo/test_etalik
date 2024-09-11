@@ -73,5 +73,6 @@ L'application sera accessible à l'adresse suivante : http://localhost:8000
 
 ## NB:
 si on utilise docker avec cette commande
+
 ```chmod +x ./boot.sh```
 ```docker-compose up --build -d ```
